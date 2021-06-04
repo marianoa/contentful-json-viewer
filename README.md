@@ -1,4 +1,8 @@
-This project was bootstrapped with [Create Contentful App](https://github.com/contentful/create-contentful-app).
+## JSON Viewer
+
+This app adds a new tab on the entry aditor allowing you to visualize the JSON payload for the current entry. This object is the result of calling the Preview API on the entry.
+
+![Screenshot](../assets/json-screenshot.png)
 
 ## Available Scripts
 
