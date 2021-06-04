@@ -1,8 +1,8 @@
-## JSON Viewer
+# JSON Viewer
 
 This app adds a new tab on the entry aditor allowing you to visualize the JSON payload for the current entry. This object is the result of calling the Preview API on the entry.
 
-![Screenshot](../assets/json-screenshot.png)
+It leverages an open source library called [react-json-view](https://github.com/mac-s-g/react-json-view) to format the JSON object in a user-friendly manner.
 
 ## Available Scripts
 
