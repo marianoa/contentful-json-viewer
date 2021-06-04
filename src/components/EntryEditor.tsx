@@ -1,7 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import { Paragraph, SkeletonDisplayText } from '@contentful/forma-36-react-components';
 import { EditorExtensionSDK } from '@contentful/app-sdk';
-import { setSyntheticLeadingComments } from 'typescript';
 // import the react-json-view component
 import ReactJson from 'react-json-view';
 

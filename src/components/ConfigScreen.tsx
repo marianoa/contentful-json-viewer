@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { AppExtensionSDK } from '@contentful/app-sdk';
-import { Heading, List, ListItem, Switch, Form, Workbench, Paragraph } from '@contentful/forma-36-react-components';
-import { css } from 'emotion';
+import { Typography, Heading, Paragraph} from '@contentful/forma-36-react-components';
+import appScreenShot from '../assets/json-screenshot.png';
+import styles from './styles';
 
 export interface AppInstallationParameters {}
 
@@ -39,44 +40,17 @@ export default class Config extends Component<ConfigProps, ConfigState> {
   };
 
   createTargetState = async () => {
-    const appId = this.props.sdk.ids.app;
 
     const currentState = await this.props.sdk.app.getCurrentState();
 
-    // return {
-    //   // Transformation of an environment performed in the
-    //   // installation process.
-    //   targetState: {
-    //     EditorInterface: {
-    //       // Always pass in the `currentState` to avoid
-    //       // removing any previous location configuration.
-    //       ...currentState?.EditorInterface,
-    //       'category': {
-    //           editors: {
-    //             // Places the entry at the second position
-    //             // (position = 1) in the editors list for the
-    //             // content type with ID `my-content-type-id`.
-    //             widgetNamespace: "app",
-    //             widgetId: appId,
-    //             position: 4             
-    //           }
-    //       }
-    //     }
-    //   },
-    // };
-    
     const EditorInterface = this.state.data.reduce(
       (editorInterface: any, { active, contentType }) => {
         if (active) {
           console.log(contentType.sys.id)   
           editorInterface[contentType.sys.id] = {
-            editors: [
-              {
-                widgetNamespace: "app",
-                widgetId: appId,
-                position: 4
-              },
-            ],
+            //placing the JSON Viewer tab as the second tab
+            //ideally we would place as the last tab (is it possible?)
+            editors: { position : 1},           
           };
         }
         console.log(editorInterface);
@@ -99,7 +73,6 @@ export default class Config extends Component<ConfigProps, ConfigState> {
     const { space, ids } = this.props.sdk;
 
     const editorInterfaces = await space.getEditorInterfaces();
-    const appId = ids.app;
 
     const appIncludedInEditors = (appId: any, editorInterface: any) => {
       if (editorInterface.editor) {
@@ -116,35 +89,33 @@ export default class Config extends Component<ConfigProps, ConfigState> {
         const contentTypeId = ei.sys?.contentType?.sys?.id;
         const contentType = await space.getContentType(contentTypeId);
 
-        //return { contentType, active: appIncludedInEditors(appId, ei) };
         return { contentType, active: true };
       })
     );
   }
 
-  toggleElement(index: number, current: boolean) {
-    this.setState(state => {
-      state.data[index].active = !current;
-      return state;
-    });
-  }
-
   render() {
     return (
       <>
-        <Heading>Select which Content Types will include the JSON Viewer</Heading>
-        <List>
-          {this.state.data.map(({ active, contentType }, index) => (
-            <ListItem key={contentType.sys.id}>
-              <Switch
-                id={contentType.sys.id}
-                labelText={contentType.name}
-                isChecked={active}
-                onToggle={() => this.toggleElement(index, active)}
-              />
-            </ListItem>
-          ))}
-        </List>
+      <div className={styles.background} />
+      <div className={styles.body}>
+        <div>
+          <Typography>
+            <Heading className={styles.spaced}>About the JSON Viewer app</Heading>
+
+            <Paragraph>
+                This app adds a new tab on the entry aditor allowing you to visualize the JSON payload for the current entry. This object is the result of calling the Preview API on the entry.
+            </Paragraph>
+           
+            <Paragraph>
+              Installing this app will add the entry editor tab to all Content Types in your space.  
+            </Paragraph>
+          </Typography>
+        </div>
+        <div className={styles.logo}>
+          <img src={appScreenShot} alt="JSON Viewer" width="400"/>
+        </div>
+      </div>
       </>
     );
   }
