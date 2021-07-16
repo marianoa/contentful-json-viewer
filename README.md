@@ -1,4 +1,4 @@
-# JSON Viewer
+# Contentful JSON Viewer
 
 This app adds a new tab on the entry aditor allowing you to visualize the JSON payload for the current entry. This object is the result of calling the Preview API on the entry.
 
