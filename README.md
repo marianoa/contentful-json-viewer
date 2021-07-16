@@ -4,6 +4,14 @@ This app adds a new tab on the entry aditor allowing you to visualize the JSON p
 
 It leverages an open source library called [react-json-view](https://github.com/mac-s-g/react-json-view) to format the JSON object in a user-friendly manner.
 
+![image](https://user-images.githubusercontent.com/840764/125956326-49ee7285-85aa-4d74-a223-aa09c2fc45aa.png)
+
+## Installation
+
+When creating the App definition within the Contentful Org, make sure to select the following app locations:
+![image](https://user-images.githubusercontent.com/840764/125956578-c0775b00-3b67-4d53-bf73-dd7b17f5dd71.png)
+
+
 ## Available Scripts
 
 In the project directory, you can run:
