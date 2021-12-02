@@ -1,4 +1,7 @@
-# Contentful JSON Viewer
+
+# Contentful JSON Viewer 
+[![Install to Contentful](https://www.ctfstatic.com/button/install-small.svg)](https://app.contentful.com/deeplink?link=apps&id=69mKkEFmMO9ue4lwWfto2C)
+
 
 This app adds a new tab on the entry aditor allowing you to visualize the JSON payload for the current entry. This object is the result of calling the `space.getEntry(entryId)` App framework method on the entry.
 
