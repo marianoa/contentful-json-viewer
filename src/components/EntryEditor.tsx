@@ -1,5 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import { EditorExtensionSDK } from '@contentful/app-sdk';
+import { PlainClientAPI } from 'contentful-management';
 // import the react-json-view component
 import ReactJson from 'react-json-view';
 import { Accordion, AccordionItem, Dropdown, DropdownList, DropdownListItem,
@@ -7,6 +8,7 @@ import { Accordion, AccordionItem, Dropdown, DropdownList, DropdownListItem,
 
 interface EditorProps {
   sdk: EditorExtensionSDK;
+  cma: PlainClientAPI;
 }
 
 const Entry = (props: EditorProps) => {

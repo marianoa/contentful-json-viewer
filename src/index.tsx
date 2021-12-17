@@ -1,5 +1,6 @@
 import React from 'react';
 import { render } from 'react-dom';
+import { createClient } from 'contentful-management';
 
 import {
   AppExtensionSDK,
@@ -11,6 +12,7 @@ import {
   init,
   locations,
 } from '@contentful/app-sdk';
+import type { KnownSDK } from '@contentful/app-sdk';
 import '@contentful/forma-36-react-components/dist/styles.css';
 import '@contentful/forma-36-fcss/dist/styles.css';
 import '@contentful/forma-36-tokens/dist/css/index.css';
@@ -30,8 +32,22 @@ if (process.env.NODE_ENV === 'development' && window.self === window.top) {
   const root = document.getElementById('root');
   render(<LocalhostWarning />, root);
 } else {
-  init((sdk) => {
+  init((sdk: KnownSDK) => {
     const root = document.getElementById('root');
+
+    // Creating a CMA client allows you to use the contentful-management library
+    // within your app. See the contentful-management documentation at https://contentful.github.io/contentful-management.js/contentful-management/latest/
+    // to learn what is possible.
+    const cma = createClient(
+      { apiAdapter: sdk.cmaAdapter },
+      {
+        type: 'plain',
+        defaults: {
+          environmentId: sdk.ids.environment,
+          spaceId: sdk.ids.space,
+        },
+      }
+    );
 
     // All possible locations for your app
     // Feel free to remove unused locations
@@ -47,7 +63,7 @@ if (process.env.NODE_ENV === 'development' && window.self === window.top) {
       },
       {
         location: locations.LOCATION_ENTRY_EDITOR,
-        component: <EntryEditor sdk={sdk as EditorExtensionSDK} />,
+        component: <EntryEditor cma={cma} sdk={sdk as EditorExtensionSDK} />,
       },
       {
         location: locations.LOCATION_DIALOG,
