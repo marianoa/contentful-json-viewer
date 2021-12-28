@@ -3,8 +3,7 @@ import { EditorExtensionSDK } from '@contentful/app-sdk';
 import { PlainClientAPI } from 'contentful-management';
 // import the react-json-view component
 import ReactJson from 'react-json-view';
-import { Accordion, AccordionItem, Dropdown, DropdownList, DropdownListItem,
-  SectionHeading, Note, Paragraph, Button } from '@contentful/forma-36-react-components';
+import { Button, Dropdown, DropdownList, DropdownListItem, Flex  } from '@contentful/forma-36-react-components';
 
 interface EditorProps {
   sdk: EditorExtensionSDK;
@@ -15,7 +14,7 @@ const Entry = (props: EditorProps) => {
   const [json, setJson] = useState(JSON.stringify({}));
   const [sys, setSys] = useState({});
   const [isOpen, setOpen] = useState(false);
-  const [depthState, SetDepthState] = useState(1);
+  const [depthState, SetDepthState] = useState(0);
 
   const { sdk, cma } = props;
 
@@ -37,18 +36,23 @@ const Entry = (props: EditorProps) => {
 
   // @ts-ignore
   useEffect(async () => {
-    const data = await cma.entry.references({
-      entryId: entryId,
-      include: depthState
-    });
-    setJson(JSON.stringify(data, null, 2))
+    if (depthState >= 1) {
+      const data = await cma.entry.references({
+        entryId: entryId,
+        include: depthState
+      });
+      setJson(JSON.stringify(data, null, 2))
+    }
+    else {
+      const data = await sdk.space.getEntry(entryId);
+      setJson(JSON.stringify(data, null, 2))
+    }
   }, [sys, depthState]);
 
 
   return (<>
-    <Accordion>
-      <AccordionItem title={<SectionHeading>JSON Viewer Options</SectionHeading>}>
-
+    <Flex margin="spacingS">
+      <Flex marginRight="spacingM">
         <Dropdown
           isOpen={isOpen}
           onClose={() => setOpen(false)}
@@ -59,22 +63,27 @@ const Entry = (props: EditorProps) => {
           }
         >
           <DropdownList>
-            <DropdownListItem onClick={(event) => setDepthHandler(event, 1)}>1 Nested Levels</DropdownListItem>
-            <DropdownListItem onClick={(event) => setDepthHandler(event, 2)}>2 Nested Levels</DropdownListItem>
-            <DropdownListItem onClick={(event) => setDepthHandler(event, 3)}>3 Nested Levels</DropdownListItem>
-            <DropdownListItem onClick={(event) => setDepthHandler(event, 4)}>4 Nested Levels</DropdownListItem>
-            <DropdownListItem onClick={(event) => setDepthHandler(event, 5)}>5 Nested Levels</DropdownListItem>
-            <DropdownListItem onClick={(event) => setDepthHandler(event, 6)}>6 Nested Levels</DropdownListItem>
-            <DropdownListItem onClick={(event) => setDepthHandler(event, 7)}>7 Nested Levels</DropdownListItem>
-            <DropdownListItem onClick={(event) => setDepthHandler(event, 8)}>8 Nested Levels</DropdownListItem>
-            <DropdownListItem onClick={(event) => setDepthHandler(event, 9)}>9 Nested Levels</DropdownListItem>
-            <DropdownListItem onClick={(event) => setDepthHandler(event, 10)}>10 Nested Levels</DropdownListItem>
+            <DropdownListItem onClick={(event) => setDepthHandler(event, 0)}>No Nested Items</DropdownListItem>
+            <DropdownListItem onClick={(event) => setDepthHandler(event, 1)}>1</DropdownListItem>
+            <DropdownListItem onClick={(event) => setDepthHandler(event, 2)}>2</DropdownListItem>
+            <DropdownListItem onClick={(event) => setDepthHandler(event, 3)}>3</DropdownListItem>
+            <DropdownListItem onClick={(event) => setDepthHandler(event, 4)}>4</DropdownListItem>
+            <DropdownListItem onClick={(event) => setDepthHandler(event, 5)}>5</DropdownListItem>
+            <DropdownListItem onClick={(event) => setDepthHandler(event, 6)}>6</DropdownListItem>
+            <DropdownListItem onClick={(event) => setDepthHandler(event, 7)}>7</DropdownListItem>
+            <DropdownListItem onClick={(event) => setDepthHandler(event, 8)}>8</DropdownListItem>
+            <DropdownListItem onClick={(event) => setDepthHandler(event, 9)}>9</DropdownListItem>
+            <DropdownListItem onClick={(event) => setDepthHandler(event, 10)}>10</DropdownListItem>
           </DropdownList>
         </Dropdown>
+      </Flex>
+    </Flex>
 
-      </AccordionItem>
-    </Accordion>
-    <ReactJson src={JSON.parse(json)} displayDataTypes={false} />
+
+
+    <Flex margin="spacingS">
+      <ReactJson src={JSON.parse(json)} displayDataTypes={false} />
+    </Flex>
   </>);
 };
 
