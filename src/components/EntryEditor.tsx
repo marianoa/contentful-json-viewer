@@ -15,7 +15,7 @@ const Entry = (props: EditorProps) => {
   const [json, setJson] = useState(JSON.stringify({}));
   const [sys, setSys] = useState({});
   const [isOpen, setOpen] = useState(false);
-  const [depthState, SetDepthState] = useState(0);
+  const [depthState, SetDepthState] = useState(10);
 
   const { sdk, cma } = props;
 
