@@ -104,7 +104,6 @@ export default class Config extends Component<ConfigProps, ConfigState> {
   }
 
   updatePreviewApiToken(event: any) {
-    console.log('updatePreviewApiToken -> value', event.target.value)
     this.setState({
         previewApiToken: event.target.value,
     })
