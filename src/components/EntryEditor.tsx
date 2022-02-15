@@ -102,6 +102,7 @@ const Entry = (props: EditorProps) => {
         shouldCollapse={collapser}
         collapseStringsAfterLength={80}
         enableClipboard={false}
+        displayObjectSize={false}
       />
     </Flex>
   </>);
