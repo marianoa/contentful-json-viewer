@@ -2,7 +2,7 @@ import React, {useState, useEffect} from 'react';
 import { EditorExtensionSDK } from '@contentful/app-sdk';
 import { PlainClientAPI } from 'contentful-management';
 // import the react-json-view component
-import ReactJson from 'react-json-view';
+import ReactJson, { CollapsedFieldProps } from 'react-json-view'
 import { Button, Dropdown, DropdownList, DropdownListItem, Flex  } from '@contentful/forma-36-react-components';
 
 interface EditorProps {
@@ -40,14 +40,13 @@ const Entry = (props: EditorProps) => {
       const data = await cma.entry.references({
         entryId: entryId,
         include: depthState
-      });
-      setJson(JSON.stringify(data, null, 2))
-    }
-    else {
-      const data = await sdk.space.getEntry(entryId);
-      setJson(JSON.stringify(data, null, 2))
-    }
-  }, [sys, depthState]);
+  const collapser = (field:CollapsedFieldProps) => {
+    // const { name, src, type, namespace } = field
+    const { name } = field
+    if (name === 'sys') return true
+    if (name === 'metadata') return true
+    return false
+  }
 
 
   return (<>
@@ -82,7 +81,14 @@ const Entry = (props: EditorProps) => {
 
 
     <Flex margin="spacingS">
-      <ReactJson src={JSON.parse(json)} displayDataTypes={false} />
+      <ReactJson
+        src={JSON.parse(json)}
+        name={false}
+        displayDataTypes={false}
+        shouldCollapse={collapser}
+        collapseStringsAfterLength={80}
+        enableClipboard={false}
+      />
     </Flex>
   </>);
 };
