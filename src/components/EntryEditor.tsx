@@ -3,6 +3,7 @@ import { EditorExtensionSDK } from '@contentful/app-sdk';
 import { PlainClientAPI } from 'contentful-management';
 // import the react-json-view component
 import ReactJson, { CollapsedFieldProps } from 'react-json-view'
+import { createClient } from 'contentful'
 import { Button, Dropdown, DropdownList, DropdownListItem, Flex  } from '@contentful/forma-36-react-components';
 
 interface EditorProps {
@@ -35,11 +36,25 @@ const Entry = (props: EditorProps) => {
   }
 
   // @ts-ignore
-  useEffect(async () => {
-    if (depthState >= 1) {
-      const data = await cma.entry.references({
-        entryId: entryId,
+  useEffect(() => {
+    ;(async () => {
+      const installation_params: {[index: string]:any} = sdk.parameters.installation
+      const token: string = installation_params['previewApiToken']
+      const cpa = createClient({
+        space: sdk.ids.space,
+        environment: sdk.ids.environment,
+        accessToken: token,
+        host: 'preview.contentful.com'
+      })
+      const data = await cpa.getEntries({
+        'sys.id': sdk.ids.entry,
         include: depthState
+      })
+      console.log('data:', data.items[0])
+      setJson(JSON.stringify(data.items[0], null, 2))
+    })()
+  }, [sys, depthState, cma.entry, sdk.ids, sdk.space, sdk.parameters, entryId]);
+
   const collapser = (field:CollapsedFieldProps) => {
     // const { name, src, type, namespace } = field
     const { name } = field
