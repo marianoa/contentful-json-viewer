@@ -50,7 +50,6 @@ const Entry = (props: EditorProps) => {
         'sys.id': sdk.ids.entry,
         include: depthState
       })
-      console.log('data:', data.items[0])
       setJson(JSON.stringify(data.items[0], null, 2))
     })()
   }, [sys, depthState, cma.entry, sdk.ids, sdk.space, sdk.parameters, entryId]);
