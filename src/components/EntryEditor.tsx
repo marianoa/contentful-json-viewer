@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import { EditorExtensionSDK } from '@contentful/app-sdk';
-import { PlainClientAPI } from 'contentful-management';
+import { PlainClientAPI, LocaleProps } from 'contentful-management';
 // import the react-json-view component
 import ReactJson, { CollapsedFieldProps } from 'react-json-view'
 import { createClient } from 'contentful'
@@ -16,6 +16,9 @@ const Entry = (props: EditorProps) => {
   const [sys, setSys] = useState({});
   const [isOpen, setOpen] = useState(false);
   const [depthState, SetDepthState] = useState(10);
+  const [isLocaleOpen, setIsLocaleOpen] = useState(false)
+  const [locales, setLocales] = useState<LocaleProps[]>()
+  const [selectedLocale, setSelectedLocale] = useState<LocaleProps>()
 
   const { sdk, cma } = props;
 
@@ -35,6 +38,11 @@ const Entry = (props: EditorProps) => {
     setOpen(!isOpen); // close the select list
   }
 
+  const setLocaleHandler = (event: any, locale: any) => {
+    setSelectedLocale(locale)
+    setIsLocaleOpen(!isLocaleOpen)
+  }
+
   // @ts-ignore
   useEffect(() => {
     ;(async () => {
@@ -51,6 +59,10 @@ const Entry = (props: EditorProps) => {
         include: depthState
       })
       setJson(JSON.stringify(data.items[0], null, 2))
+      const _locales = await props.cma.locale.getMany({})
+      setLocales(_locales.items)
+      const default_locale = _locales.items.find(l => l.default)
+      setSelectedLocale(default_locale)
     })()
   }, [sys, depthState, cma.entry, sdk.ids, sdk.space, sdk.parameters, entryId]);
 
@@ -87,6 +99,23 @@ const Entry = (props: EditorProps) => {
             <DropdownListItem onClick={(event) => setDepthHandler(event, 8)}>8</DropdownListItem>
             <DropdownListItem onClick={(event) => setDepthHandler(event, 9)}>9</DropdownListItem>
             <DropdownListItem onClick={(event) => setDepthHandler(event, 10)}>10</DropdownListItem>
+          </DropdownList>
+        </Dropdown>
+      </Flex>
+      <Flex marginRight="spacingM">
+        <Dropdown
+          isOpen={isLocaleOpen}
+          onClose={() => setIsLocaleOpen(false)}
+          toggleElement={
+            <Button size="small" buttonType="muted" indicateDropdown onClick={() => setIsLocaleOpen(!isLocaleOpen)}>
+              Locale: {selectedLocale?.name}
+            </Button>
+          }
+        >
+          <DropdownList>
+            {locales && locales.map((locale, i) => 
+              <DropdownListItem key={i} onClick={(event) => setLocaleHandler(event, locale.code)}>{locale.name}</DropdownListItem>  
+            )}
           </DropdownList>
         </Dropdown>
       </Flex>
