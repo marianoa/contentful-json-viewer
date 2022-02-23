@@ -35,6 +35,22 @@ const Entry = (props: EditorProps) => {
     setOpen(!isOpen); // close the select list
   }
 
+  const stringify_json = (item: any) => {
+    var cache: object[] | null = []
+    const item_str = JSON.stringify(item, (key, value) => {
+      if (typeof value === 'object' && value !== null) {
+        // Duplicate reference found, discard key
+        if (cache?.includes(value)) return "---CIRCULAR REFERENCE REMOVED---"
+
+        // Store value in our collection
+        cache?.push(value)
+      }
+      return value
+    },2)
+    cache = null // Enable garbage collection
+    return item_str
+  }
+
   // @ts-ignore
   useEffect(() => {
     ;(async () => {
@@ -50,7 +66,7 @@ const Entry = (props: EditorProps) => {
         'sys.id': sdk.ids.entry,
         include: depthState
       })
-      setJson(JSON.stringify(data.items[0], null, 2))
+      setJson(stringify_json(data.items[0]))
     })()
   }, [sys, depthState, cma.entry, sdk.ids, sdk.space, sdk.parameters, entryId]);
 
