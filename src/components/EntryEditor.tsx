@@ -43,6 +43,22 @@ const Entry = (props: EditorProps) => {
     setIsLocaleOpen(!isLocaleOpen)
   }
 
+  const stringify_json = (item: any) => {
+    var cache: object[] | null = []
+    const item_str = JSON.stringify(item, (key, value) => {
+      if (typeof value === 'object' && value !== null) {
+        // Duplicate reference found, discard key
+        if (cache?.includes(value)) return "---CIRCULAR REFERENCE REMOVED---"
+
+        // Store value in our collection
+        cache?.push(value)
+      }
+      return value
+    },2)
+    cache = null // Enable garbage collection
+    return item_str
+  }
+
   // @ts-ignore
   useEffect(() => {
     ;(async () => {
@@ -63,6 +79,7 @@ const Entry = (props: EditorProps) => {
       setLocales(_locales.items)
       const default_locale = _locales.items.find(l => l.default)
       setSelectedLocale(default_locale)
+      setJson(stringify_json(data.items[0]))
     })()
   }, [sys, depthState, cma.entry, sdk.ids, sdk.space, sdk.parameters, entryId]);
 
@@ -73,7 +90,6 @@ const Entry = (props: EditorProps) => {
     if (name === 'metadata') return true
     return false
   }
-
 
   return (<>
     <Flex margin="spacingS">
@@ -120,8 +136,6 @@ const Entry = (props: EditorProps) => {
         </Dropdown>
       </Flex>
     </Flex>
-
-
 
     <Flex margin="spacingS">
       <ReactJson
