@@ -22,9 +22,6 @@ const Entry = (props: EditorProps) => {
 
   const { sdk, cma } = props;
 
-  //get the entryId
-  const entryId = sdk.entry.getSys().id;
-
   //refresh the entry when there's a change, to get latest changes
   useEffect(() => {
     sdk.entry.onSysChanged((sys) => {
