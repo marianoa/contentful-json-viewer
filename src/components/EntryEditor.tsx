@@ -82,10 +82,11 @@ const Entry = (props: EditorProps) => {
       const data = await cpa.getEntries({
         'sys.id': sdk.ids.entry,
         include: depthState,
+        locale: selectedLocale?.code || sdk.locales.default,
       })
       setJson(stringify_json(data.items[0]))
     })()
-  }, [sys, depthState, cma.entry, sdk.ids, sdk.space, sdk.parameters, entryId]);
+  }, [depthState, sdk, selectedLocale]);
 
   const collapser = (field:CollapsedFieldProps) => {
     // const { name, src, type, namespace } = field
