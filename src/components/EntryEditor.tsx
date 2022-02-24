@@ -59,6 +59,15 @@ const Entry = (props: EditorProps) => {
     return item_str
   }
 
+  useEffect(() => {
+    ;(async ()=> {
+      const _locales = await cma.locale.getMany({})
+      setLocales(_locales.items)
+      const default_locale = _locales.items.find((l) => l.default)
+      setSelectedLocale(default_locale)
+    })()
+  },[cma.locale])
+
   // @ts-ignore
   useEffect(() => {
     ;(async () => {
@@ -72,13 +81,8 @@ const Entry = (props: EditorProps) => {
       })
       const data = await cpa.getEntries({
         'sys.id': sdk.ids.entry,
-        include: depthState
+        include: depthState,
       })
-      setJson(JSON.stringify(data.items[0], null, 2))
-      const _locales = await props.cma.locale.getMany({})
-      setLocales(_locales.items)
-      const default_locale = _locales.items.find(l => l.default)
-      setSelectedLocale(default_locale)
       setJson(stringify_json(data.items[0]))
     })()
   }, [sys, depthState, cma.entry, sdk.ids, sdk.space, sdk.parameters, entryId]);
