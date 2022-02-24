@@ -135,7 +135,7 @@ const Entry = (props: EditorProps) => {
         >
           <DropdownList>
             {locales && locales.map((locale, i) => 
-              <DropdownListItem key={i} onClick={(event) => setLocaleHandler(event, locale.code)}>{locale.name}</DropdownListItem>  
+              <DropdownListItem key={i} onClick={(event) => setLocaleHandler(event, locale)}>{locale.name}</DropdownListItem>  
             )}
           </DropdownList>
         </Dropdown>
