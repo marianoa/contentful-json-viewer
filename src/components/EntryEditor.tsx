@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import { EditorExtensionSDK } from '@contentful/app-sdk';
-import { PlainClientAPI } from 'contentful-management';
+import { PlainClientAPI, LocaleProps } from 'contentful-management';
 // import the react-json-view component
 import ReactJson, { CollapsedFieldProps } from 'react-json-view'
 import { createClient } from 'contentful'
@@ -16,11 +16,11 @@ const Entry = (props: EditorProps) => {
   const [sys, setSys] = useState({});
   const [isOpen, setOpen] = useState(false);
   const [depthState, SetDepthState] = useState(10);
+  const [isLocaleOpen, setIsLocaleOpen] = useState(false)
+  const [locales, setLocales] = useState<LocaleProps[]>()
+  const [selectedLocale, setSelectedLocale] = useState<LocaleProps>()
 
   const { sdk, cma } = props;
-
-  //get the entryId
-  const entryId = sdk.entry.getSys().id;
 
   //refresh the entry when there's a change, to get latest changes
   useEffect(() => {
@@ -33,6 +33,11 @@ const Entry = (props: EditorProps) => {
   const setDepthHandler = (event: React.MouseEvent<Element, MouseEvent>, depth: React.SetStateAction<number>) => {
     SetDepthState(depth);
     setOpen(!isOpen); // close the select list
+  }
+
+  const setLocaleHandler = (event: any, locale: any) => {
+    setSelectedLocale(locale)
+    setIsLocaleOpen(!isLocaleOpen)
   }
 
   const stringify_json = (item: any) => {
@@ -51,6 +56,15 @@ const Entry = (props: EditorProps) => {
     return item_str
   }
 
+  useEffect(() => {
+    ;(async ()=> {
+      const _locales = await cma.locale.getMany({})
+      setLocales(_locales.items)
+      const default_locale = _locales.items.find((l) => l.default)
+      setSelectedLocale(default_locale)
+    })()
+  },[cma.locale])
+
   // @ts-ignore
   useEffect(() => {
     ;(async () => {
@@ -64,11 +78,12 @@ const Entry = (props: EditorProps) => {
       })
       const data = await cpa.getEntries({
         'sys.id': sdk.ids.entry,
-        include: depthState
+        include: depthState,
+        locale: selectedLocale?.code || sdk.locales.default,
       })
       setJson(stringify_json(data.items[0]))
     })()
-  }, [sys, depthState, cma.entry, sdk.ids, sdk.space, sdk.parameters, entryId]);
+  }, [depthState, sdk, selectedLocale]);
 
   const collapser = (field:CollapsedFieldProps) => {
     // const { name, src, type, namespace } = field
@@ -77,7 +92,6 @@ const Entry = (props: EditorProps) => {
     if (name === 'metadata') return true
     return false
   }
-
 
   return (<>
     <Flex margin="spacingS">
@@ -106,9 +120,24 @@ const Entry = (props: EditorProps) => {
           </DropdownList>
         </Dropdown>
       </Flex>
+      <Flex marginRight="spacingM">
+        <Dropdown
+          isOpen={isLocaleOpen}
+          onClose={() => setIsLocaleOpen(false)}
+          toggleElement={
+            <Button size="small" buttonType="muted" indicateDropdown onClick={() => setIsLocaleOpen(!isLocaleOpen)}>
+              Locale: {selectedLocale?.name}
+            </Button>
+          }
+        >
+          <DropdownList>
+            {locales && locales.map((locale, i) => 
+              <DropdownListItem key={i} onClick={(event) => setLocaleHandler(event, locale)}>{locale.name}</DropdownListItem>  
+            )}
+          </DropdownList>
+        </Dropdown>
+      </Flex>
     </Flex>
-
-
 
     <Flex margin="spacingS">
       <ReactJson
