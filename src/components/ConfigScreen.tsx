@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { AppExtensionSDK } from '@contentful/app-sdk';
-import { Typography, Heading, Paragraph} from '@contentful/forma-36-react-components';
+import { Typography, Heading, Paragraph, TextField} from '@contentful/forma-36-react-components';
 import appScreenShot from '../assets/json-screenshot.png';
 import styles from './styles';
 
@@ -11,6 +11,7 @@ interface ConfigProps {
 }
 
 interface ConfigState {
+  previewApiToken: string;
   data: { active: boolean; contentType: any }[];
 }
 
@@ -19,9 +20,11 @@ export default class Config extends Component<ConfigProps, ConfigState> {
     super(props);
 
     this.state = {
+      previewApiToken: '',
       data: [],
     };
 
+    this.updatePreviewApiToken = this.updatePreviewApiToken.bind(this)
     props.sdk.app.onConfigure(() => this.onConfigure());
   }
 
@@ -33,8 +36,10 @@ export default class Config extends Component<ConfigProps, ConfigState> {
     // Generate a new target state with the App assigned to the selected
     // content types
     const targetState = await this.createTargetState();
+    const parameters = { previewApiToken: this.state.previewApiToken }
 
     return {
+      parameters,
       targetState,
     };
   };
@@ -63,10 +68,14 @@ export default class Config extends Component<ConfigProps, ConfigState> {
   };
 
   async componentDidMount() {
+    const parameters = await this.props.sdk.app.getParameters()
     const data = await this.getContentTypesUsingEditor();
-    this.setState({ data }, () => {
-      this.props.sdk.app.setReady();
-    });
+    this.setState({
+      previewApiToken: parameters?.previewApiToken,
+      data,
+    }, () => {
+      this.props.sdk.app.setReady()
+    })
   }
 
   async getContentTypesUsingEditor() {
@@ -94,6 +103,12 @@ export default class Config extends Component<ConfigProps, ConfigState> {
     );
   }
 
+  updatePreviewApiToken(event: any) {
+    this.setState({
+        previewApiToken: event.target.value,
+    })
+  }
+
   render() {
     return (
       <>
@@ -110,10 +125,22 @@ export default class Config extends Component<ConfigProps, ConfigState> {
             <Paragraph>
               Installing this app will add the entry editor tab to all Content Types in your space.  
             </Paragraph>
+            <div className={styles.logo}>
+              <img src={appScreenShot} alt="JSON Viewer" width="400"/>
+            </div>
+            <Heading className={styles.spaced}>Configuration</Heading>
+            <Paragraph>
+              Please supply the Preview API token for this space:
+            </Paragraph>
+            <TextField
+              required
+              name="previewApiToken"
+              id="previewApiToken"
+              labelText="previewApiToken"
+              value={this.state.previewApiToken}
+              onChange={this.updatePreviewApiToken}
+            />
           </Typography>
-        </div>
-        <div className={styles.logo}>
-          <img src={appScreenShot} alt="JSON Viewer" width="400"/>
         </div>
       </div>
       </>
